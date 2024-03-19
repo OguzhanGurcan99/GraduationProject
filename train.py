@@ -88,4 +88,4 @@ def train_model():
 	torch.save(unet, config.MODEL_PATH)
 
 if __name__ == '__main__':
-	train_model()
+	train_model() # yorum satırı
