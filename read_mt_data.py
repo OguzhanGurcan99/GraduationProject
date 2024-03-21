@@ -1,3 +1,5 @@
+import sys
+
 import geopandas as gpd
 import utm
 from PIL import Image
@@ -8,6 +10,25 @@ import cv2
 
 import configuration
 from configuration import *
+
+
+
+def find_bottom_right_top_left(points):
+    if not points:
+        return None, None
+
+    bottom_right = [float('-inf'), float('-inf')]
+    top_left = [float('inf'), float('inf')]
+
+    for lat, lon in points:
+        bottom_right[0] = max(bottom_right[0], lat)
+        bottom_right[1] = max(bottom_right[1], lon)
+
+        top_left[0] = min(top_left[0], lat)
+        top_left[1] = min(top_left[1], lon)
+
+    return tuple(top_left), tuple(bottom_right)
+
 
 def isPointInsidePolygon(point, polygon):
     '''
@@ -37,6 +58,7 @@ def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygon_dict):
     rasterMap = np.zeros((xSize, ySize, 3))
     rasterMask = np.zeros((xSize, ySize, 3))
     temp_poly=None
+    temp_crop_type=None
     for i in range(startX, startX+xSize):
         for j in range(startY, startY+ySize):
             rasterMap[i-startX][j-startY][0]=raster.read(1)[i][j]
@@ -46,25 +68,33 @@ def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygon_dict):
             val = raster.xy(i, j)
             lat, lon = utm.to_latlon(val[0], val[1], 35, northern=True)
             point = Point(lat, lon)
-            '''
+
             if temp_poly:
-                result = isPointInsidePolygon(point, poly)
+                result = isPointInsidePolygon(point, temp_poly)
                 if result:
-                    rasterMask[i-startX][j-startY][0] = CROP_COLOR_CODES[k][0]
-                    rasterMask[i-startX][j-startY][1] = CROP_COLOR_CODES[k][1]
-                    rasterMask[i-startX][j-startY][2] = CROP_COLOR_CODES[k][2]
+                    color = CROP_COLOR_CODES[temp_crop_type]
+                    rasterMask[i-startX][j-startY][0] = color[0]
+                    rasterMask[i-startX][j-startY][1] = color[1]
+                    rasterMask[i-startX][j-startY][2] = color[2]
+                    continue
                 else:
                     temp_poly=None
-                continue
-            '''
+                    temp_crop_type=None
+
+
 
             for k, v in polygon_dict.items():
                 flag = True
                 for each_poly in v:
-                    poly = Polygon(each_poly)
-                    result = isPointInsidePolygon(point, poly)
+                    min_point_of_poly, max_point_of_poly = polygon_minmax_points_dict_train[tuple(each_poly)]
+                    if min_point_of_poly[0] < lat < max_point_of_poly[0] and min_point_of_poly[1] < lon < max_point_of_poly[1]:
+                        poly = Polygon(each_poly)
+                        result = isPointInsidePolygon(point, poly)
+                    else:
+                        result=False
                     if result:
                         temp_poly = poly
+                        temp_crop_type = k
                         flag = False
                         color = CROP_COLOR_CODES[k]
                         rasterMask[i-startX][j-startY][0] = color[0]
@@ -80,11 +110,11 @@ def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygon_dict):
 
     rasterMap = np.clip(rasterMap, 0, 255).astype('uint8')
     image = Image.fromarray(rasterMap, 'RGB')
-    image.save("imageRGB" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
+    image.save("imageRGB6" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
 
     rasterMask = np.clip(rasterMask, 0, 255).astype('uint8')
     image = Image.fromarray(rasterMask, 'RGB')
-    image.save("maskRGB" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
+    image.save("maskRGB6" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
 
 
 
@@ -107,6 +137,17 @@ polygon_dict_train = {"bugday" : bugday_polygons_train,
                 "zeytin" : zeytin_polygons_train}
 
 
+
+
+polygon_minmax_points_dict_train = {}
+for k, v in polygon_dict_train.items():
+    for each_poly in v:
+        polygon_minmax_points_dict_train[tuple(each_poly)] = find_bottom_right_top_left(each_poly)
+
+
+#sys.exit(1)
+
+
 rasterRGB = rasterio.open(COMPOSITE_RGB_TIF_FILE_PATH)
 
 xSize = 101
@@ -121,4 +162,16 @@ for i in range(300, 700, 200):
         print(ct)
         ct+=1
 '''
+
+import time
+
+start_time = time.time()
+
 cutPatchAndCreateMask(rasterRGB, xSize, ySize, startX, startY, polygon_dict_train)
+
+end_time = time.time()
+runtime = end_time - start_time
+print("Runtime:", runtime, "seconds")
+
+
+
