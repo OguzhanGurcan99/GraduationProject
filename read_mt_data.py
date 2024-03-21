@@ -7,12 +7,18 @@ from shapely.geometry import Point, Polygon
 import rasterio
 import numpy as np
 import cv2
-
+import os
 import configuration
 from configuration import *
+import time
+import random
+import datetime
 
 
-
+def createDirectoriesIfNotExist(directories):
+    for directory in directories:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 def find_bottom_right_top_left(points):
     if not points:
         return None, None
@@ -110,12 +116,21 @@ def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygon_dict):
 
     rasterMap = np.clip(rasterMap, 0, 255).astype('uint8')
     image = Image.fromarray(rasterMap, 'RGB')
-    image.save("imageRGB6" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
+    image.save("dataset_patches/imageRGB-" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
 
     rasterMask = np.clip(rasterMask, 0, 255).astype('uint8')
     image = Image.fromarray(rasterMask, 'RGB')
-    image.save("maskRGB6" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
+    image.save("dataset_masks/maskRGB-" + str(xSize) + "-" + str(ySize) + "-" + str(startX) + "-" + str(startY) + ".png")
 
+
+
+
+
+
+
+
+
+createDirectoriesIfNotExist(["./dataset_patches", "./dataset_masks"])
 
 
 bugday_polygons_train = read_shp_file(BUGDAY_SHP_FILE_PATH)
@@ -150,28 +165,31 @@ for k, v in polygon_dict_train.items():
 
 rasterRGB = rasterio.open(COMPOSITE_RGB_TIF_FILE_PATH)
 
-xSize = 101
-ySize = 101
-startX = 300
-startY = 1500
-'''
-ct=0
-for i in range(300, 700, 200):
-   for j in range(1500, 1900, 200):
-        cutPatchAndCreateMask(rasterRGB, 101, 101, i, j, polygon_dict_train)
-        print(ct)
-        ct+=1
-'''
+xSize = 64 #101
+ySize = 64 #101
+startX = [random.randint(0,1650), random.randint(0,1650), random.randint(0,1650), random.randint(0,1650)] #300
+startY = [random.randint(0,2850), random.randint(0,2850), random.randint(0,2850), random.randint(0,2850), random.randint(0,2850)] #1500
 
-import time
+number_of_patches = len(startX)*len(startY)
+
+print(number_of_patches, "patches will be generated in total with size", str(xSize) + "x" + str(ySize))
+print("Generation has started...")
 
 start_time = time.time()
 
-cutPatchAndCreateMask(rasterRGB, xSize, ySize, startX, startY, polygon_dict_train)
+ct=1
+for i in startX:
+    for j in startY:
+        start_time_temp = time.time()
+        cutPatchAndCreateMask(rasterRGB, xSize, ySize, i, j, polygon_dict_train)
+        end_time_temp = time.time()
+        print("Successfully generated patch", "#"+str(ct)+"#")
+        #print("Time Taken:", datetime.timedelta(seconds=end_time_temp - start_time_temp))
+        minutes = int(divmod((number_of_patches - ct)*(end_time_temp - start_time_temp), 60)[0])
+        seconds = int(divmod((number_of_patches - ct)*(end_time_temp - start_time_temp), 60)[1])
+        print('{} minutes {} seconds left'.format(minutes, seconds))
+        ct+=1
 
 end_time = time.time()
-runtime = end_time - start_time
-print("Runtime:", runtime, "seconds")
-
-
-
+print("Done...")
+print("Total time taken:", '{} minutes {} seconds'.format(*divmod(end_time - start_time, 60)))
