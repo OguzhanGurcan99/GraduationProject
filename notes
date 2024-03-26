@@ -1,0 +1,8 @@
+startX = random.sample(range(300, 1000), 5)
+startY = random.sample(range(1200, 2500), 5)
+200  #üretildi
+
+
+startX = random.sample(range(400, 1300), 5)
+startY = random.sample(range(200, 1200), 5)
+100 # üretildi

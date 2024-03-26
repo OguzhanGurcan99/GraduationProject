@@ -162,13 +162,15 @@ for k, v in polygon_dict_train.items():
 
 #sys.exit(1)
 
+X = 2957
+Y = 1765
 
 rasterRGB = rasterio.open(COMPOSITE_RGB_TIF_FILE_PATH)
 
 xSize = 64 #101
 ySize = 64 #101
-startX = [random.randint(0,1650), random.randint(0,1650), random.randint(0,1650), random.randint(0,1650)] #300
-startY = [random.randint(0,2850), random.randint(0,2850), random.randint(0,2850), random.randint(0,2850), random.randint(0,2850)] #1500
+startX = random.sample(range(400, 1300), 5)
+startY = random.sample(range(200, 1200), 5)
 
 number_of_patches = len(startX)*len(startY)
 
@@ -192,4 +194,6 @@ for i in startX:
 
 end_time = time.time()
 print("Done...")
-print("Total time taken:", '{} minutes {} seconds'.format(*divmod(end_time - start_time, 60)))
+minutes = int(divmod(end_time - start_time, 60)[0])
+seconds = int(divmod(end_time - start_time, 60)[1])
+print("Total time taken:", '{} minutes {} seconds'.format(minutes, seconds))
