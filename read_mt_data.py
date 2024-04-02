@@ -165,12 +165,13 @@ for k, v in polygon_dict_train.items():
 X = 2957
 Y = 1765
 
+
 rasterRGB = rasterio.open(COMPOSITE_RGB_TIF_FILE_PATH)
 
 xSize = 64 #101
 ySize = 64 #101
-startX = random.sample(range(400, 1300), 5)
-startY = random.sample(range(200, 1200), 5)
+startX = random.sample(range(300, 1000), 5)
+startY = random.sample(range(1200, 2500), 5)
 
 number_of_patches = len(startX)*len(startY)
 

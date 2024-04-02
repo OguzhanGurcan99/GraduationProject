@@ -1,22 +1,22 @@
 import torch, os
 
 DATASET_PATH = "C:/Users/oguzh/PycharmProjects/graduationProject/competition_data/train"
-IMAGE_DATASET_PATH = os.path.join(DATASET_PATH, "images")
-MASK_DATASET_PATH = os.path.join(DATASET_PATH, "masks")
+IMAGE_DATASET_PATH = os.path.join(DATASET_PATH, "dataset_patches")
+MASK_DATASET_PATH = os.path.join(DATASET_PATH, "dataset_masks")
 TEST_SPLIT = 0.15
 #DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DEVICE = "cpu"
 PIN_MEMORY = True if DEVICE == "cuda" else False
 
-NUM_CHANNELS = 1
-NUM_CLASSES = 1
-NUM_LEVELS = 3
+#NUM_CHANNELS = 1
+#NUM_CLASSES = 1
+#NUM_LEVELS = 3
 INIT_LR = 0.001
-NUM_EPOCHS = 40
-BATCH_SIZE = 64
-INPUT_IMAGE_WIDTH = 128
-INPUT_IMAGE_HEIGHT = 128
-THRESHOLD = 0.5
+NUM_EPOCHS = 12
+BATCH_SIZE = 16
+INPUT_IMAGE_WIDTH = 64
+INPUT_IMAGE_HEIGHT = 64
+#THRESHOLD = 0.5
 BASE_OUTPUT = "C:/Users/oguzh/PycharmProjects/graduationProject/output"
 MODEL_PATH = os.path.join(BASE_OUTPUT, "unet_tgs_salt.pth")
 PLOT_PATH = os.path.sep.join([BASE_OUTPUT, "plot.png"])

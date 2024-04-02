@@ -1,7 +1,7 @@
 from unet_code.dataset import SegmentationDataset
 from unet_code.model import UNet
 from unet_code import config
-from torch.nn import BCEWithLogitsLoss
+from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import torch
 import time
 import os
+import torch.nn.functional as F
+from weighted_loss import WeightedCrossEntropyLoss
 
 
 
@@ -39,7 +41,7 @@ testLoader = DataLoader(testDS, shuffle=False, batch_size=config.BATCH_SIZE, pin
 def train_model():
 
 	unet = UNet().to(config.DEVICE)
-	lossFunc = BCEWithLogitsLoss()
+	lossFunc = WeightedCrossEntropyLoss(weight=torch.tensor([1,1,1,1,1,1,1,0.01])) # CrossEntropyLoss()
 	opt = Adam(unet.parameters(), lr=config.INIT_LR)
 	trainSteps = len(trainDS) // config.BATCH_SIZE
 	testSteps = len(testDS) // config.BATCH_SIZE
@@ -56,7 +58,7 @@ def train_model():
 		for (i, (x, y)) in enumerate(trainLoader):
 			(x, y) = (x.to(config.DEVICE), y.to(config.DEVICE))
 			pred = unet(x)
-			loss = lossFunc(pred, y)
+			loss = lossFunc(pred, y.long())
 			opt.zero_grad()
 			loss.backward()
 			opt.step()
@@ -66,7 +68,7 @@ def train_model():
 			for (x, y) in testLoader:
 				(x, y) = (x.to(config.DEVICE), y.to(config.DEVICE))
 				pred = unet(x)
-				totalTestLoss += lossFunc(pred, y)
+				totalTestLoss += lossFunc(pred, y.long())
 		avgTrainLoss = totalTrainLoss / trainSteps
 		avgTestLoss = totalTestLoss / testSteps
 		H["train_loss"].append(avgTrainLoss.cpu().detach().numpy())
