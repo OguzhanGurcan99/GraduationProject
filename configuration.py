@@ -9,6 +9,16 @@ ZEYTIN_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt
 
 COMPOSITE_RGB_TIF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\RGB.tif"
 
+_04_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\04_VH.tif"
+_04_VV_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\04_VV.tif"
+_04_VV_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\04_VV-VH.tif"
+
+_07_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\07_VH.tif"
+_07_VV_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\07_VV.tif"
+_07_VV_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\07_VV-VH.tif"
+
+
+
 CROP_COLOR_CODES = {
     "bugday" : (255,0,0),   #red
     "domates" : (0,255,0),  #green
