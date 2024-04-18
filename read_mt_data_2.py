@@ -8,12 +8,22 @@ import os
 import configuration
 from configuration import *
 
-
+def create_file_if_not_exist(file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    if not os.path.exists(file_path):
+        with open(file_path, 'a+'):
+            pass
+def save_coordinates(source_file, destination_file):
+    create_file_if_not_exist(destination_file)
+    with open(source_file, 'r') as source:
+        with open(destination_file, 'a+') as destination:
+            destination.write(source.read())
 def createDirectoriesIfNotExist(directories):
     for directory in directories:
         if not os.path.exists(directory):
             os.makedirs(directory)
-
 def find_bottom_right_top_left(points):
     if not points:
         return None, None
@@ -29,7 +39,6 @@ def find_bottom_right_top_left(points):
         top_left[1] = min(top_left[1], lon)
 
     return tuple(top_left), tuple(bottom_right)
-
 def isPointInsidePolygon(point, polygon):
     '''
     # Point objects(Geo-coordinates)
@@ -41,7 +50,6 @@ def isPointInsidePolygon(point, polygon):
     poly = Polygon(coords)
     '''
     return polygon.contains(point) or polygon.touches(point)
-
 def read_shp_file(path):
     shapefile = gpd.read_file(path)
     total_list=[]
@@ -53,7 +61,6 @@ def read_shp_file(path):
             converted_list.append((lat, lon))
         total_list.append(converted_list)
     return total_list
-
 def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygons, min_max_points):
     rasterMap = np.zeros((xSize, ySize, 1))
     rasterMask = np.zeros((xSize, ySize, 1))
@@ -91,56 +98,84 @@ def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygons, min_ma
                 pass
 
     return (rasterMap, rasterMask)
-
-def createImageAndPatches(patch_dir, mask_dir, shapefile_path, xSize, ySize, x, y):
+def createImageAndPatches(patch_dir, mask_dir, shapefile_path, xSize, ySize, coordinates_list, rasters):
     createDirectoriesIfNotExist([patch_dir, mask_dir])
     polygons = read_shp_file(shapefile_path)
     min_max_points = create_polygon_minmax_points_dict(polygons)
-
-    rasters = [
-        rasterio.open(configuration._04_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._04_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._04_VV_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._07_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._07_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._07_VV_VH_TIFF_FILE_PATH)
-    ]
 
     #row, col = raster1.index(x[0], y[0])
     #val = raster1.xy(450, 1610)
     #crs_x, crs_y = raster1.xy(880, 2140)
     #pixel_value = raster1.read(1)[row, col]
 
-    for i in x:
-        for j in y:
-            rasterMaps = []
-            rasterMasks = []
-            for raster in rasters:
-                row, col = raster.index(i, j)
-                rasterMap, rasterMask = cutPatchAndCreateMask(raster, xSize, ySize, row, col, polygons, min_max_points)
-                rasterMaps.append(rasterMap)
-                rasterMasks.append(rasterMask)
-            rasterMaps = np.array(rasterMaps)
-            stackedMaps = np.squeeze(rasterMaps, axis=-1)
-            np.save(patch_dir+"/" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".npy", stackedMaps)
-            count=1
-            for m in rasterMasks:
-                tempMask = np.clip(m, 0, 255).astype('uint8')
-                image = Image.fromarray(tempMask.squeeze()).convert('L')
-                image.save(mask_dir+"/" + str(count) + "_" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".png")
-                count+=1
+    for pair in coordinates_list:
+        i = pair[0]
+        j = pair[1]
+        rasterMaps = []
+        rasterMasks = []
+        for raster in rasters:
+            row, col = raster.index(i, j)
+            rasterMap, rasterMask = cutPatchAndCreateMask(raster, xSize, ySize, row, col, polygons, min_max_points)
+            rasterMaps.append(rasterMap)
+            rasterMasks.append(rasterMask)
+        rasterMaps = np.array(rasterMaps)
+        stackedMaps = np.squeeze(rasterMaps, axis=-1)
+        np.save(patch_dir+"/" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".npy", stackedMaps)
 
+        #save only first mask, bc all of them are same
+        tempMask = np.clip(rasterMasks[0], 0, 255).astype('uint8')
+        image = Image.fromarray(tempMask.squeeze()).convert('L')
+        image.save(mask_dir+"/" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".png")
 def create_polygon_minmax_points_dict(polygons):
     polygon_minmax_points_dict = {}
     for each_poly in polygons:
         polygon_minmax_points_dict[tuple(each_poly)] = find_bottom_right_top_left(each_poly)
     return polygon_minmax_points_dict
+def readCoordinatesFromFile(file_path, points):
+    file = open(file_path, "r")
+    for line in file.readlines():
+        xValue = float(line.split(",")[1].rstrip())
+        yValue = float(line.split(",")[0])
+        points.append([xValue, yValue])
+    return points
 
 
+
+rasters = [
+        rasterio.open(configuration._04_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._04_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._04_VV_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._05_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._05_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._05_VV_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._06_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._06_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._06_VV_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._07_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._07_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._07_VV_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._08_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._08_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._08_VV_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._09_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._09_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._09_VV_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._10_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._10_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._10_VV_VH_TIFF_FILE_PATH)
+    ]
+
+#PARAMETERS
+#PARAMETERS
 xSize = 64 #101
 ySize = 64 #101
 
-x = [28.0680318]
-y = [38.5714250]
+prefix = "domates"
+shp_file_path = DOMATES_SHP_FILE_PATH
+#PARAMETERS
+#PARAMETERS
 
-createImageAndPatches("./bugday_patches", "./bugday_masks", BUGDAY_SHP_FILE_PATH, xSize, ySize, x, y)
+
+coordinates_list = readCoordinatesFromFile(COORDINATES_FILE_PATH, [])
+createImageAndPatches("./data/patches/"+prefix+"_patches", "./data/masks/"+prefix+"_masks", shp_file_path, xSize, ySize, coordinates_list, rasters)
+save_coordinates(COORDINATES_FILE_PATH, "./data/"+prefix+"_samples.txt")
