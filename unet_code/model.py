@@ -22,7 +22,7 @@ class Block(Module):
 
 
 class Encoder(Module):
-    def __init__(self, channels=(3, 16, 32, 64)):
+    def __init__(self, channels=(21, 32, 64, 128)):
         super().__init__()
         self.encBlocks = ModuleList([Block(channels[i], channels[i + 1]) for i in range(len(channels) - 1)])
         self.pool = MaxPool2d(2)
@@ -36,7 +36,7 @@ class Encoder(Module):
         return blockOutputs
 
 class Decoder(Module):
-    def __init__(self, channels=(64, 32, 16)):
+    def __init__(self, channels=(128, 64, 32)):
         super().__init__()
         self.channels = channels
         self.upconvs = ModuleList([ConvTranspose2d(channels[i], channels[i + 1], 2, 2) for i in range(len(channels) - 1)])
@@ -57,9 +57,9 @@ class Decoder(Module):
 
 
 class UNet(Module):
-    def __init__(self, encChannels=(3, 16, 32, 64),
-                 decChannels=(64, 32, 16),
-                 nbClasses=8, retainDim=True,
+    def __init__(self, encChannels=(21, 32, 64, 128),
+                 decChannels=(128, 64, 32),
+                 nbClasses=1, retainDim=True,
                  outSize=(config.INPUT_IMAGE_HEIGHT, config.INPUT_IMAGE_WIDTH)):
         super().__init__()
         self.encoder = Encoder(encChannels)

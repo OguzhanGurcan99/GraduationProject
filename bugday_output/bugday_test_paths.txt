@@ -1,0 +1,14 @@
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-27dot994544_38dot580976.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-27dot924874_38dot577651.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-28dot029424_38dot495672.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-28dot059344_38dot584569.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-27dot850885_38dot621341.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-27dot940063_38dot603619.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-27dot993425_38dot591355.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-28dot051853_38dot561388.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-27dot882515_38dot581479.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-28dot001558_38dot574048.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-28dot118676_38dot620408.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-27dot973231_38dot541659.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-28dot031086_38dot57683.npy
+C:/Users/oguzh/PycharmProjects/graduationProject/data\patches/bugday_patches\64-64-28dot141478_38dot534592.npy

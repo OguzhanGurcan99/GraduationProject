@@ -7,8 +7,6 @@ UZUM_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_d
 YONCA_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\yonca.shp"
 ZEYTIN_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\zeytin.shp"
 
-COMPOSITE_RGB_TIF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\RGB.tif"
-
 COORDINATES_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\coordinates.txt"
 
 _04_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\04_VH.tif"

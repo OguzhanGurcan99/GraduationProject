@@ -1,25 +1,23 @@
-import torch, os
+import os
 
-DATASET_PATH = "C:/Users/oguzh/PycharmProjects/graduationProject/competition_data/train"
-IMAGE_DATASET_PATH = os.path.join(DATASET_PATH, "dataset_patches")
-MASK_DATASET_PATH = os.path.join(DATASET_PATH, "dataset_masks")
+prefix = "bugday" # TODO train ve predict asamalarinda guncellenmeli.
+
+DATASET_PATH = "C:/Users/oguzh/PycharmProjects/graduationProject/data"
+IMAGE_DATASET_PATH = os.path.join(DATASET_PATH, "patches/"+prefix+"_patches")
+MASK_DATASET_PATH = os.path.join(DATASET_PATH, "masks/"+prefix+"_masks")
 TEST_SPLIT = 0.15
-#DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DEVICE = "cpu"
 PIN_MEMORY = True if DEVICE == "cuda" else False
 
-#NUM_CHANNELS = 1
-#NUM_CLASSES = 1
-#NUM_LEVELS = 3
 INIT_LR = 0.001
-NUM_EPOCHS = 12
-BATCH_SIZE = 16
+NUM_EPOCHS = 8
+BATCH_SIZE = 12
 INPUT_IMAGE_WIDTH = 64
 INPUT_IMAGE_HEIGHT = 64
-#THRESHOLD = 0.5
-BASE_OUTPUT = "C:/Users/oguzh/PycharmProjects/graduationProject/output"
-MODEL_PATH = os.path.join(BASE_OUTPUT, "unet_tgs_salt.pth")
-PLOT_PATH = os.path.sep.join([BASE_OUTPUT, "plot.png"])
-TEST_PATHS = os.path.sep.join([BASE_OUTPUT, "test_paths.txt"])
+THRESHOLD = 0.3
+BASE_OUTPUT = "C:/Users/oguzh/PycharmProjects/graduationProject/"+prefix+"_output"
+MODEL_PATH = os.path.join(BASE_OUTPUT, prefix+"_model.pth")
+PLOT_PATH = os.path.sep.join([BASE_OUTPUT, prefix+"_plot.png"])
+TEST_PATHS = os.path.sep.join([BASE_OUTPUT, prefix+"_test_paths.txt"])
 
 
