@@ -164,7 +164,7 @@ rasters = [
 xSize = 64 #101
 ySize = 64 #101
 
-prefix = "bugday" # TODO patch ve mask uretimi asamasinda guncellenmeli.
+prefix = "bugday" # TODO patch, mask uretimi ve train-predict asamalarinda guncellenmeli.
 shp_file_path = BUGDAY_SHP_FILE_PATH
 #PARAMETERS
 #PARAMETERS
