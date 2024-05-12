@@ -1,13 +1,13 @@
 import colorsys
 
-BUGDAY_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\bugday.shp"
-DOMATES_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\domates.shp"
-MISIR_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\misir.shp"
-MISIR2_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\misir2.shp"
-PAMUK_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\pamuk.shp"
-UZUM_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\uzum.shp"
-YONCA_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\yonca.shp"
-ZEYTIN_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\zeytin.shp"
+BUGDAY_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\bugday.shp"
+DOMATES_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\domates.shp"
+MISIR_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\misir.shp"
+MISIR2_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\misir2.shp"
+PAMUK_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\pamuk.shp"
+UZUM_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\uzum.shp"
+YONCA_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\yonca.shp"
+ZEYTIN_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\zeytin.shp"
 
 BUGDAY_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\bugday_probs_0.png"
 DOMATES_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\domates_probs_0.png"
