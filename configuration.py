@@ -1,3 +1,5 @@
+import colorsys
+
 BUGDAY_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\bugday.shp"
 DOMATES_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\domates.shp"
 MISIR_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\misir.shp"
@@ -6,6 +8,16 @@ PAMUK_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_
 UZUM_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\uzum.shp"
 YONCA_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\yonca.shp"
 ZEYTIN_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\mt_data\\01_Train_Test_Shapefile\\00_Train\\zeytin.shp"
+
+BUGDAY_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\bugday_probs_0.png"
+DOMATES_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\domates_probs_0.png"
+MISIR_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\misir_probs_0.png"
+MISIR2_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\misir2_probs_0.png"
+PAMUK_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\pamuk_probs_0.png"
+UZUM_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\uzum_probs_0.png"
+YONCA_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\yonca_probs_0.png"
+ZEYTIN_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\zeytin_probs_0.png"
+
 
 COORDINATES_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\coordinates.txt"
 
@@ -37,16 +49,23 @@ _10_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\t
 _10_VV_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\10_VV.tif"
 _10_VV_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files\\10_VV-VH.tif"
 
+def convertHSVtoRGB(h,s,v):
+    r, g, b = colorsys.hsv_to_rgb(h, s, v)
+    r *= 255
+    g *= 255
+    b *= 255
+    return r, g, b
+
 CROP_COLOR_CODES = {
-    "bugday" : (255,0,0),   #red
-    "domates" : (0,255,0),  #green
-    "misir" : (0,0,255),    #blue
-    "misir2" : (0,0,255),    #blue
-    "pamuk" : (128,0,128),  #purple
-    "uzum" : (128,128,0),   #olive
-    "yonca" : (0,255,255),  #aqua
-    "zeytin" : (255,127,80),#coral
-    "diger" : (0,0,0)       #black
+    "bugday" : convertHSVtoRGB(0.0, 1.0, 1.0),
+    "domates" : convertHSVtoRGB(0.125, 1.0, 1.0),
+    "misir" : convertHSVtoRGB(0.250, 1.0, 1.0),
+    "misir2" : convertHSVtoRGB(0.375, 1.0, 1.0),
+    "pamuk" : convertHSVtoRGB(0.500, 1.0, 1.0),
+    "uzum" : convertHSVtoRGB(0.625, 1.0, 1.0),
+    "yonca" : convertHSVtoRGB(0.750, 1.0, 1.0),
+    "zeytin" : convertHSVtoRGB(0.875, 1.0, 1.0),
+    "diger" : convertHSVtoRGB(0.0, 0.0, 0.0)
 }
 
 class_map = {

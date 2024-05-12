@@ -1,3 +1,6 @@
+from PIL.Image import Image
+from sklearn.metrics import confusion_matrix
+
 from unet_code import config
 import matplotlib.pyplot as plt
 import numpy as np
@@ -35,10 +38,16 @@ def make_predictions(model, imagePath, ct):
         output_probs_np = output_probs.cpu().numpy()
         output_probs_np = (output_probs_np > config.THRESHOLD) * 255
         output_probs_np = output_probs_np.astype(np.uint8)
-        ones_array = np.ones((64, 64, 3))
+        ones_array = np.mean(numpy_array, axis=0)
         prepare_plot(ones_array, gtMask, output_probs_np, ct, filename)
+        conf_matrix = confusion_matrix(gtMask.flatten(), output_probs_np.flatten())
+        print(conf_matrix)
+        print("-----")
 
-
+        subfolder = 'probs'
+        if not os.path.exists(subfolder):
+            os.makedirs(subfolder)
+        cv2.imwrite(os.path.join(subfolder, config.prefix+'_probs_' + str(ct) + '.png'), output_probs_np)
 
 imagePaths = open(config.TEST_PATHS).read().strip().split("\n")
 imagePaths = np.random.choice(imagePaths, size=10)
