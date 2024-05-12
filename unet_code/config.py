@@ -1,6 +1,5 @@
 import os
-
-prefix = "bugday" # TODO train ve predict asamalarinda guncellenmeli.
+from read_mt_data import prefix
 
 DATASET_PATH = "C:/Users/oguzh/PycharmProjects/graduationProject/data"
 IMAGE_DATASET_PATH = os.path.join(DATASET_PATH, "patches/"+prefix+"_patches")
