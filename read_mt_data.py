@@ -164,8 +164,8 @@ rasters = [
 xSize = 64 #101
 ySize = 64 #101
 
-prefix = "misir" # TODO patch, mask uretimi ve train-predict asamalarinda guncellenmeli.
-shp_file_path = MISIR_SHP_FILE_PATH
+prefix = "yonca" # TODO patch, mask uretimi ve train-predict asamalarinda guncellenmeli.
+shp_file_path = YONCA_SHP_FILE_PATH
 #PARAMETERS
 #PARAMETERS
 
