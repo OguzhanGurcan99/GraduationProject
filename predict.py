@@ -8,6 +8,14 @@ import torch
 import cv2
 import os
 
+def create_file_if_not_exist(file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    if not os.path.exists(file_path):
+        with open(file_path, 'a+'):
+            pass
+
 def calculate_iou(mask1, mask2):
     mask1 = mask1.astype(bool)
     mask2 = mask2.astype(bool)
@@ -26,7 +34,7 @@ def calculate_dice_coefficient(mask1, mask2):
     dice_coefficient = (2.0 * intersection_count) / (mask1_count + mask2_count)
     return dice_coefficient
 
-def prepare_plot(origImage, origMask, predMask, ct, filename):
+def prepare_plot(origImage, origMask, predMask, ct, filename, patch_identifier):
     figure, ax = plt.subplots(nrows=1, ncols=3, figsize=(10, 10))
     ax[0].imshow(origImage)
     ax[1].imshow(origMask)
@@ -36,7 +44,7 @@ def prepare_plot(origImage, origMask, predMask, ct, filename):
     ax[2].set_title("Predicted Mask")
     figure.suptitle(filename)
     figure.tight_layout()
-    figure.savefig(str(ct)+'_foo.png')
+    figure.savefig("plot_"+patch_identifier+'.png')
     #figure.show()
 
 
@@ -57,10 +65,12 @@ def make_predictions(model, imagePath, ct):
         output_probs_np = (output_probs_np > config.THRESHOLD) * 255
         output_probs_np = output_probs_np.astype(np.uint8)
         ones_array = np.mean(numpy_array, axis=0)
-        prepare_plot(ones_array, gtMask, output_probs_np, ct, filename)
+        patch_identifier = imagePath.split("\\")[-1].split(".")[0]
+        prepare_plot(ones_array, gtMask, output_probs_np, ct, filename, patch_identifier)
         conf_matrix = confusion_matrix(gtMask.flatten(), output_probs_np.flatten())
         print(conf_matrix)
         print("-----")
+        '''
         TP = conf_matrix[0][0]
         FP = conf_matrix[0][1]
         FN = conf_matrix[1][0]
@@ -69,14 +79,18 @@ def make_predictions(model, imagePath, ct):
         print("ACCURACY: ", (TP+TN)/(TP+FP+TN+FN))
         print("IOU: ", calculate_iou(output_probs_np, gtMask.numpy()))
         print("DICE: ",calculate_dice_coefficient(output_probs_np, gtMask.numpy()))
-
+        '''
         subfolder = 'probs'
         if not os.path.exists(subfolder):
             os.makedirs(subfolder)
-        cv2.imwrite(os.path.join(subfolder, config.prefix+'_probs_' + str(ct) + '.png'), output_probs_np)
+
+        cv2.imwrite(os.path.join(subfolder, config.prefix+'_probs_' + patch_identifier + '.png'), output_probs_np)
+        create_file_if_not_exist(config.PROBS_FILE_PATH)
+        with open(config.PROBS_FILE_PATH, 'a+') as destination:
+            destination.write(patch_identifier+"\n")
 
 imagePaths = open(config.TEST_PATHS).read().strip().split("\n")
-imagePaths = np.random.choice(imagePaths, size=5)
+imagePaths = np.random.choice(imagePaths, size=3)
 
 unet = torch.load(config.MODEL_PATH).to(config.DEVICE)
 

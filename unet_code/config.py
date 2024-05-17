@@ -1,19 +1,45 @@
 import os
-from read_mt_data import prefix
+import rasterio
+import configuration
 
-DATASET_PATH = "C:/Users/oguzh/PycharmProjects/graduationProject/data"
+prefix = "bugday" # TODO patch, mask uretimi ve train-predict asamalarinda guncellenmeli.
+shp_file_path = configuration.BUGDAY_SHP_FILE_PATH
+
+xSize = 64
+ySize = 64
+
+DATASET_PATH = "C:/Users/oguzh/PycharmProjects/graduationProject/data2"
+
+rasters = [
+        rasterio.open(configuration._04_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._04_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._05_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._05_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._06_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._06_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._08_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._08_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._09_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._09_VV_TIFF_FILE_PATH),
+        rasterio.open(configuration._10_VH_TIFF_FILE_PATH),
+        rasterio.open(configuration._10_VV_TIFF_FILE_PATH)
+    ]
+
+
 IMAGE_DATASET_PATH = os.path.join(DATASET_PATH, "patches/"+prefix+"_patches")
 MASK_DATASET_PATH = os.path.join(DATASET_PATH, "masks/"+prefix+"_masks")
+SAMPLES_PATH = os.path.join(DATASET_PATH, prefix+"_samples.txt")
+PROBS_FILE_PATH = "C:/Users/oguzh/PycharmProjects/graduationProject/probs/probs.txt"
 TEST_SPLIT = 0.15
 DEVICE = "cpu"
 PIN_MEMORY = True if DEVICE == "cuda" else False
 
 INIT_LR = 0.001
-NUM_EPOCHS = 8
+NUM_EPOCHS = 15
 BATCH_SIZE = 12
 INPUT_IMAGE_WIDTH = 64
 INPUT_IMAGE_HEIGHT = 64
-THRESHOLD = 0.3
+THRESHOLD = 0.28
 BASE_OUTPUT = "C:/Users/oguzh/PycharmProjects/graduationProject/"+prefix+"_output"
 MODEL_PATH = os.path.join(BASE_OUTPUT, prefix+"_model.pth")
 PLOT_PATH = os.path.sep.join([BASE_OUTPUT, prefix+"_plot.png"])

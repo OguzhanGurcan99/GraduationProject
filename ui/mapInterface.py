@@ -1,30 +1,41 @@
-# import folium library
 import folium
+import numpy as np
+import random
 
-# create a map object
-mapObj = folium.Map(location=[39.5, 32.5],
-                    zoom_start=9)
+distance = 0.01
 
-# create a polygon with the coordinates
-folium.Polygon([
-    (39.0, 32.0),
-    (39.5, 32.0),
-    (39.0, 32.5),
-    ],
-               stroke=False,
-               color="#a632a8",
-               weight=2,
-               fill=True,
-               fill_color="blue",
-               fill_opacity=0.4).add_to(mapObj)
+latA = 38.54714
+lonA = 28.00335
+latB = 38.54714 + distance
+lonB = 28.00335 + distance
+precision = 4
 
-folium.Polygon([(38.5579844115523, 33.94856833258687), (38.557984374908, 33.94857062840577), (38.55798439930028, 33.948572534459956), (38.55802372238102, 33.95009419430794), (38.55705864995358, 33.95008325621953), (38.557061466239674, 33.948652745101), (38.557340787850684, 33.94858111556249), (38.55734762410784, 33.948578633974265), (38.55735406881734, 33.9485748139594), (38.55735996156201, 33.94856975060262), (38.557365155663774, 33.94856356993725), (38.55736952183462, 33.948556425807865), (38.55737295139483, 33.9485484960411), (38.55737535897812, 33.94853997801919), (38.55737668465655, 33.94853108376692), (38.557376895432235, 33.948522034673985), (38.55734736911826, 33.94776015286774), (38.55870365309964, 33.94751696864444), (38.558753714393205, 33.94835647204522), (38.55802191916702, 33.94851406755799), (38.558014495718304, 33.948516508771384), (38.55800750473673, 33.94852051756467), (38.55800114864911, 33.94852597786117), (38.55799561149854, 33.94853273155533), (38.55799105361547, 33.94854058309099), (38.557987606975225, 33.9485493051236), (38.55798537137663, 33.948558645103176), (38.5579844115523, 33.94856833258687)],
-               stroke=False,
-               color="#a632a8",
-               weight=2,
-               fill=True,
-               fill_color="yellow",
-               fill_opacity=0.4).add_to(mapObj)
 
-# save the map object as a html
+mapObj = folium.Map(location=[38.56, 28.01],
+                    zoom_start=13)
+
+np.arange(latA, latB + (latB-latA)/precision, (latB-latA)/precision)
+
+for i in np.arange(latA, latB + (latB-latA)/precision, (latB-latA)/precision):
+    for j in np.arange(lonA, lonB + (lonB-lonA)/precision, (lonB-lonA)/precision):
+        lat1 = i
+        lon1 = j
+        lat2 = i + (latB-latA)/precision
+        lon2 = j + (lonB-lonA)/precision
+
+        color = "%06x" % random.randint(0, 0xFFFFFF)
+
+        folium.Polygon([
+        (lat2, lon1),
+        (lat2, lon2),
+        (lat1, lon2),
+        (lat1, lon1)
+        ],
+                   stroke=False,
+                   color="#a632a8",
+                   weight=2,
+                   fill=True,
+                   fill_color="#"+color,
+                   fill_opacity=0.4).add_to(mapObj)
+
 mapObj.save('output.html')

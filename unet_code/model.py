@@ -22,7 +22,7 @@ class Block(Module):
 
 
 class Encoder(Module):
-    def __init__(self, channels=(21, 32, 64, 128)):
+    def __init__(self, channels=(len(config.rasters), 32, 64, 128)):
         super().__init__()
         self.encBlocks = ModuleList([Block(channels[i], channels[i + 1]) for i in range(len(channels) - 1)])
         self.pool = MaxPool2d(2)
@@ -57,7 +57,7 @@ class Decoder(Module):
 
 
 class UNet(Module):
-    def __init__(self, encChannels=(21, 32, 64, 128),
+    def __init__(self, encChannels=(len(config.rasters), 32, 64, 128),
                  decChannels=(128, 64, 32),
                  nbClasses=1, retainDim=True,
                  outSize=(config.INPUT_IMAGE_HEIGHT, config.INPUT_IMAGE_WIDTH)):

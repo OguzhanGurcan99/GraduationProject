@@ -2,11 +2,11 @@ import geopandas as gpd
 import utm
 from PIL import Image
 from shapely.geometry import Point, Polygon
-import rasterio
 import numpy as np
 import os
 import configuration
 from configuration import *
+from unet_code.config import *
 
 def create_file_if_not_exist(file_path):
     directory = os.path.dirname(file_path)
@@ -190,42 +190,7 @@ def readCoordinatesFromFile(file_path, points):
     return points
 
 
-
-rasters = [
-        rasterio.open(configuration._04_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._04_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._04_VV_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._05_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._05_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._05_VV_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._06_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._06_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._06_VV_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._07_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._07_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._07_VV_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._08_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._08_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._08_VV_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._09_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._09_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._09_VV_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._10_VH_TIFF_FILE_PATH),
-        rasterio.open(configuration._10_VV_TIFF_FILE_PATH),
-        rasterio.open(configuration._10_VV_VH_TIFF_FILE_PATH)
-    ]
-
-#PARAMETERS
-#PARAMETERS
-xSize = 64 #101
-ySize = 64 #101
-
-prefix = "bugday" # TODO patch, mask uretimi ve train-predict asamalarinda guncellenmeli.
-shp_file_path = BUGDAY_SHP_FILE_PATH
-#PARAMETERS
-#PARAMETERS
-
 if __name__ == "__main__":
     coordinates_list = readCoordinatesFromFile(COORDINATES_FILE_PATH, [])
-    createImageAndPatches("./data/patches/"+prefix+"_patches", "./data/masks/"+prefix+"_masks", shp_file_path, xSize, ySize, coordinates_list, rasters)
-    save_coordinates(COORDINATES_FILE_PATH, "./data/"+prefix+"_samples.txt")
+    createImageAndPatches(IMAGE_DATASET_PATH, MASK_DATASET_PATH, shp_file_path, xSize, ySize, coordinates_list, rasters)
+    save_coordinates(COORDINATES_FILE_PATH, SAMPLES_PATH)
