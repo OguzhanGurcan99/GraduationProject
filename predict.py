@@ -8,6 +8,24 @@ import torch
 import cv2
 import os
 
+def calculate_iou(mask1, mask2):
+    mask1 = mask1.astype(bool)
+    mask2 = mask2.astype(bool)
+    intersection = np.logical_and(mask1, mask2)
+    union = np.logical_or(mask1, mask2)
+    iou = np.sum(intersection) / np.sum(union)
+    return iou
+
+def calculate_dice_coefficient(mask1, mask2):
+    mask1 = mask1.astype(bool)
+    mask2 = mask2.astype(bool)
+    intersection = np.logical_and(mask1, mask2)
+    intersection_count = np.count_nonzero(intersection)
+    mask1_count = np.count_nonzero(mask1)
+    mask2_count = np.count_nonzero(mask2)
+    dice_coefficient = (2.0 * intersection_count) / (mask1_count + mask2_count)
+    return dice_coefficient
+
 def prepare_plot(origImage, origMask, predMask, ct, filename):
     figure, ax = plt.subplots(nrows=1, ncols=3, figsize=(10, 10))
     ax[0].imshow(origImage)
@@ -43,6 +61,14 @@ def make_predictions(model, imagePath, ct):
         conf_matrix = confusion_matrix(gtMask.flatten(), output_probs_np.flatten())
         print(conf_matrix)
         print("-----")
+        TP = conf_matrix[0][0]
+        FP = conf_matrix[0][1]
+        FN = conf_matrix[1][0]
+        TN = conf_matrix[1][1]
+        #print(TP + "_" + FP + "_" + FN + "_" + TN)
+        print("ACCURACY: ", (TP+TN)/(TP+FP+TN+FN))
+        print("IOU: ", calculate_iou(output_probs_np, gtMask.numpy()))
+        print("DICE: ",calculate_dice_coefficient(output_probs_np, gtMask.numpy()))
 
         subfolder = 'probs'
         if not os.path.exists(subfolder):
@@ -50,7 +76,7 @@ def make_predictions(model, imagePath, ct):
         cv2.imwrite(os.path.join(subfolder, config.prefix+'_probs_' + str(ct) + '.png'), output_probs_np)
 
 imagePaths = open(config.TEST_PATHS).read().strip().split("\n")
-imagePaths = np.random.choice(imagePaths, size=10)
+imagePaths = np.random.choice(imagePaths, size=5)
 
 unet = torch.load(config.MODEL_PATH).to(config.DEVICE)
 

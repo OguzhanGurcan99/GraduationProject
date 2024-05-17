@@ -52,6 +52,8 @@ def read_shp_file(path):
             converted_list.append((lat, lon))
         total_list.append(converted_list)
     return total_list
+
+'''
 def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygons, min_max_points):
     rasterMap = np.zeros((xSize, ySize, 1))
     rasterMask = np.zeros((xSize, ySize, 1))
@@ -89,6 +91,58 @@ def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygons, min_ma
                 pass
 
     return (rasterMap, rasterMask)
+'''
+
+def cutPatch(raster, xSize, ySize, startX, startY):
+    '''
+    rasterMap = np.zeros((xSize, ySize, 1))
+    for i in range(startX, startX+xSize):
+        for j in range(startY, startY+ySize):
+            rasterMap[i-startX][j-startY]=raster.read(1)[i][j]
+    '''
+    window = rasterio.windows.Window(col_off=startY, row_off=startX, width=xSize, height=ySize)
+    subset = raster.read(1, window=window)
+    rasterMap = np.expand_dims(subset, axis=-1)
+    return rasterMap
+
+
+def createMask(raster, xSize, ySize, startX, startY, polygons, min_max_points):
+    rasterMask = np.zeros((xSize, ySize, 1))
+    temp_poly=None
+    for i in range(startX, startX+xSize):
+        for j in range(startY, startY+ySize):
+            val = raster.xy(i, j)
+            lon, lat = val
+            point = Point(lat, lon)
+            if temp_poly:
+                result = isPointInsidePolygon(point, temp_poly)
+                if result:
+                    rasterMask[i-startX][j-startY] = 255
+                    continue
+                else:
+                    temp_poly=None
+
+            flag = True
+            for each_poly in polygons:
+                min_point_of_poly, max_point_of_poly = min_max_points[tuple(each_poly)]
+                if min_point_of_poly[0] < lat < max_point_of_poly[0] and min_point_of_poly[1] < lon < max_point_of_poly[1]:
+                    poly = Polygon(each_poly)
+                    result = isPointInsidePolygon(point, poly)
+                else:
+                    result=False
+                if result:
+                    temp_poly = poly
+                    flag = False
+                    rasterMask[i-startX][j-startY] = 255
+                    break
+            if flag:
+                rasterMask[i-startX][j-startY] = 0
+            else:
+                pass
+
+    return rasterMask
+
+
 def createImageAndPatches(patch_dir, mask_dir, shapefile_path, xSize, ySize, coordinates_list, rasters):
     createDirectoriesIfNotExist([patch_dir, mask_dir])
     polygons = read_shp_file(shapefile_path)
@@ -106,18 +160,20 @@ def createImageAndPatches(patch_dir, mask_dir, shapefile_path, xSize, ySize, coo
         i = pair[0]
         j = pair[1]
         rasterMaps = []
-        rasterMasks = []
+        #rasterMasks = []
         for raster in rasters:
             row, col = raster.index(i, j)
-            rasterMap, rasterMask = cutPatchAndCreateMask(raster, xSize, ySize, row, col, polygons, min_max_points)
+            #rasterMap, rasterMask = cutPatchAndCreateMask(raster, xSize, ySize, row, col, polygons, min_max_points)
+            rasterMap = cutPatch(raster, xSize, ySize, row, col)
             rasterMaps.append(rasterMap)
-            rasterMasks.append(rasterMask)
+            #rasterMasks.append(rasterMask)
+        rasterMask = createMask(raster, xSize, ySize, row, col, polygons, min_max_points)
         rasterMaps = np.array(rasterMaps)
         stackedMaps = np.squeeze(rasterMaps, axis=-1)
         np.save(patch_dir+"/" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".npy", stackedMaps)
 
         #save only first mask, bc all of them are same
-        tempMask = np.clip(rasterMasks[0], 0, 255).astype('uint8')
+        tempMask = np.clip(rasterMask, 0, 255).astype('uint8')
         image = Image.fromarray(tempMask.squeeze()).convert('L')
         image.save(mask_dir+"/" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".png")
 def create_polygon_minmax_points_dict(polygons):
@@ -164,12 +220,12 @@ rasters = [
 xSize = 64 #101
 ySize = 64 #101
 
-prefix = "yonca" # TODO patch, mask uretimi ve train-predict asamalarinda guncellenmeli.
-shp_file_path = YONCA_SHP_FILE_PATH
+prefix = "bugday" # TODO patch, mask uretimi ve train-predict asamalarinda guncellenmeli.
+shp_file_path = BUGDAY_SHP_FILE_PATH
 #PARAMETERS
 #PARAMETERS
 
-
-coordinates_list = readCoordinatesFromFile(COORDINATES_FILE_PATH, [])
-createImageAndPatches("./data/patches/"+prefix+"_patches", "./data/masks/"+prefix+"_masks", shp_file_path, xSize, ySize, coordinates_list, rasters)
-save_coordinates(COORDINATES_FILE_PATH, "./data/"+prefix+"_samples.txt")
+if __name__ == "__main__":
+    coordinates_list = readCoordinatesFromFile(COORDINATES_FILE_PATH, [])
+    createImageAndPatches("./data/patches/"+prefix+"_patches", "./data/masks/"+prefix+"_masks", shp_file_path, xSize, ySize, coordinates_list, rasters)
+    save_coordinates(COORDINATES_FILE_PATH, "./data/"+prefix+"_samples.txt")

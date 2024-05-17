@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import torch
 from sklearn.model_selection import train_test_split
 from torch.nn import BCEWithLogitsLoss
-from torch.optim import Adam
+from torch.optim import Adam, SGD
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
@@ -43,8 +43,9 @@ testLoader = DataLoader(testDS, shuffle=False, batch_size=config.BATCH_SIZE, pin
 def train_model():
 
 	unet = UNet().to(config.DEVICE)
-	lossFunc = BCEWithLogitsLoss(pos_weight=torch.tensor([1.0])) #weight=torch.tensor([0.2, 0.8])
-	opt = Adam(unet.parameters(), lr=config.INIT_LR)
+	lossFunc = BCEWithLogitsLoss(pos_weight=torch.tensor([3])) #pos_weight=torch.tensor([2])
+	opt = Adam(unet.parameters(), lr=config.INIT_LR) # SGD denenebilir
+	#opt = SGD(unet.parameters(), lr=config.INIT_LR)
 	trainSteps = len(trainDS) // config.BATCH_SIZE
 	testSteps = len(testDS) // config.BATCH_SIZE
 	H = {"train_loss": [], "test_loss": []}
