@@ -49,23 +49,17 @@ _10_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\t
 _10_VV_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files_yeni\\10_VV.tif"
 _10_VV_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files_yeni\\10_VV-VH.tif"
 
-def convertHSVtoRGB(h,s,v):
-    r, g, b = colorsys.hsv_to_rgb(h, s, v)
-    r *= 255
-    g *= 255
-    b *= 255
-    return r, g, b
 
 CROP_COLOR_CODES = {
-    "bugday" : convertHSVtoRGB(0.0, 1.0, 1.0),
-    "domates" : convertHSVtoRGB(0.125, 1.0, 1.0),
-    "misir" : convertHSVtoRGB(0.250, 1.0, 1.0),
-    "misir2" : convertHSVtoRGB(0.375, 1.0, 1.0),
-    "pamuk" : convertHSVtoRGB(0.500, 1.0, 1.0),
-    "uzum" : convertHSVtoRGB(0.625, 1.0, 1.0),
-    "yonca" : convertHSVtoRGB(0.750, 1.0, 1.0),
-    "zeytin" : convertHSVtoRGB(0.875, 1.0, 1.0),
-    "diger" : convertHSVtoRGB(0.0, 0.0, 0.0)
+    "bugday" : (255,149,0),
+    "domates" : (212,255,0),
+    "misir" : (64,255,0),
+    "misir2" : (0,255,234),
+    "pamuk" : (0,127,255),
+    "uzum" : (21,0,255),
+    "yonca" : (255,0,191),
+    "zeytin" : (255,0,43),
+    "diger" : (0,0,0)
 }
 
 class_map = {

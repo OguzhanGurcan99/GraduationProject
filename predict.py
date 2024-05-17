@@ -44,7 +44,10 @@ def prepare_plot(origImage, origMask, predMask, ct, filename, patch_identifier):
     ax[2].set_title("Predicted Mask")
     figure.suptitle(filename)
     figure.tight_layout()
-    figure.savefig("plot_"+patch_identifier+'.png')
+    subfolder = 'plots'
+    if not os.path.exists(subfolder):
+        os.makedirs(subfolder)
+    figure.savefig(os.path.join(subfolder,"plot_"+patch_identifier+'.png'))
     #figure.show()
 
 
