@@ -1,6 +1,7 @@
 import cv2
 from PIL import Image
 import configuration
+import utils
 from unet_code import config
 
 def generate_image(W, H):
@@ -16,14 +17,14 @@ width = config.xSize
 height = config.ySize
 
 for line in lines:
-    bugday_probs = cv2.imread("./bugday_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
-    domates_probs = cv2.imread("./domates_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
-    misir_probs = cv2.imread("./misir_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
-    misir2_probs = cv2.imread("./misir2_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
-    pamuk_probs = cv2.imread("./pamuk_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
-    uzum_probs = cv2.imread("./uzum_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
-    yonca_probs = cv2.imread("./yonca_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
-    zeytin_probs = cv2.imread("./zeytin_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    bugday_probs = cv2.imread("./probs/bugday_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    domates_probs = cv2.imread("./probs/domates_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    misir_probs = cv2.imread("./probs/misir_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    misir2_probs = cv2.imread("./probs/misir2_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    pamuk_probs = cv2.imread("./probs/pamuk_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    uzum_probs = cv2.imread("./probs/uzum_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    yonca_probs = cv2.imread("./probs/yonca_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
+    zeytin_probs = cv2.imread("./probs/zeytin_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
 
 
     image = generate_image(width, height)
@@ -61,5 +62,8 @@ for line in lines:
 
     image = image.rotate(90)
     image = image.transpose(Image.FLIP_TOP_BOTTOM)
-    image.save("composite_ "+line.rstrip()+".png")
+    image.save("composite_"+line.rstrip()+".png")
 
+probs_file.close()
+utils.delete_folder_if_exists("./probs")
+utils.delete_folder_if_exists("./plots")

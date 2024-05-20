@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
 
-from read_mt_data import createDirectoriesIfNotExist
+import utils
 from unet_code import config
 from unet_code.dataset import SegmentationDataset
 from unet_code.dataset import ToFloat32Tensor
@@ -24,7 +24,8 @@ split = train_test_split(imagePaths, maskPaths, test_size=config.TEST_SPLIT, ran
 (trainImages, testImages) = split[:2]
 (trainMasks, testMasks) = split[2:]
 
-createDirectoriesIfNotExist(["./"+config.prefix+"_output"])
+utils.createDirectoriesIfNotExist(["./saved_models"])
+utils.createDirectoriesIfNotExist(["./saved_models/"+config.prefix+"_output"])
 f = open(config.TEST_PATHS, "w")
 f.write("\n".join(testImages))
 f.close()

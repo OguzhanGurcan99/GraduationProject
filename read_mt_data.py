@@ -3,27 +3,18 @@ import utm
 from PIL import Image
 from shapely.geometry import Point, Polygon
 import numpy as np
-import os
-import configuration
+
+import utils
 from configuration import *
 from unet_code.config import *
 
-def create_file_if_not_exist(file_path):
-    directory = os.path.dirname(file_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    if not os.path.exists(file_path):
-        with open(file_path, 'a+'):
-            pass
+
 def save_coordinates(source_file, destination_file):
-    create_file_if_not_exist(destination_file)
+    utils.create_file_if_not_exist(destination_file)
     with open(source_file, 'r') as source:
         with open(destination_file, 'a+') as destination:
             destination.write(source.read())
-def createDirectoriesIfNotExist(directories):
-    for directory in directories:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+
 def find_bottom_right_top_left(points):
     if not points:
         return None, None
@@ -53,53 +44,8 @@ def read_shp_file(path):
         total_list.append(converted_list)
     return total_list
 
-'''
-def cutPatchAndCreateMask(raster, xSize, ySize, startX, startY, polygons, min_max_points):
-    rasterMap = np.zeros((xSize, ySize, 1))
-    rasterMask = np.zeros((xSize, ySize, 1))
-    temp_poly=None
-    for i in range(startX, startX+xSize):
-        for j in range(startY, startY+ySize):
-            rasterMap[i-startX][j-startY]=raster.read(1)[i][j]
-            val = raster.xy(i, j)
-            lon, lat = val
-            point = Point(lat, lon)
-            if temp_poly:
-                result = isPointInsidePolygon(point, temp_poly)
-                if result:
-                    rasterMask[i-startX][j-startY] = 255
-                    continue
-                else:
-                    temp_poly=None
-
-            flag = True
-            for each_poly in polygons:
-                min_point_of_poly, max_point_of_poly = min_max_points[tuple(each_poly)]
-                if min_point_of_poly[0] < lat < max_point_of_poly[0] and min_point_of_poly[1] < lon < max_point_of_poly[1]:
-                    poly = Polygon(each_poly)
-                    result = isPointInsidePolygon(point, poly)
-                else:
-                    result=False
-                if result:
-                    temp_poly = poly
-                    flag = False
-                    rasterMask[i-startX][j-startY] = 255
-                    break
-            if flag:
-                rasterMask[i-startX][j-startY] = 0
-            else:
-                pass
-
-    return (rasterMap, rasterMask)
-'''
 
 def cutPatch(raster, xSize, ySize, startX, startY):
-    '''
-    rasterMap = np.zeros((xSize, ySize, 1))
-    for i in range(startX, startX+xSize):
-        for j in range(startY, startY+ySize):
-            rasterMap[i-startX][j-startY]=raster.read(1)[i][j]
-    '''
     window = rasterio.windows.Window(col_off=startY, row_off=startX, width=xSize, height=ySize)
     subset = raster.read(1, window=window)
     rasterMap = np.expand_dims(subset, axis=-1)
@@ -144,7 +90,7 @@ def createMask(raster, xSize, ySize, startX, startY, polygons, min_max_points):
 
 
 def createImageAndPatches(patch_dir, mask_dir, shapefile_path, xSize, ySize, coordinates_list, rasters):
-    createDirectoriesIfNotExist([patch_dir, mask_dir])
+    utils.createDirectoriesIfNotExist([patch_dir, mask_dir])
     polygons = read_shp_file(shapefile_path)
     min_max_points = create_polygon_minmax_points_dict(polygons)
 

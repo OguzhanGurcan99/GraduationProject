@@ -1,12 +1,59 @@
-from PIL.Image import Image
 from sklearn.metrics import confusion_matrix
-
+import utils
 from unet_code import config
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import cv2
-import os
+from unet_code.config import *
+
+def cutPatch(raster, xSize, ySize, startX, startY):
+    window = rasterio.windows.Window(col_off=startY, row_off=startX, width=xSize, height=ySize)
+    subset = raster.read(1, window=window)
+    rasterMap = np.expand_dims(subset, axis=-1)
+    return rasterMap
+
+def createImageAndPatches(xSize, ySize, coordinates_list, rasters):
+
+    #row, col = raster1.index(x[0], y[0])
+    #val = raster1.xy(450, 1610)
+    #crs_x, crs_y = raster1.xy(880, 2140)
+    #pixel_value = raster1.read(1)[row, col]
+
+    image_paths = []
+
+    count=0
+    for pair in coordinates_list:
+        count+=1
+        print("Predicting Image " + str(count) + " Processing...")
+        i = pair[0]
+        j = pair[1]
+        rasterMaps = []
+        for raster in rasters:
+            row, col = raster.index(i, j)
+            rasterMap = cutPatch(raster, xSize, ySize, row, col)
+            rasterMaps.append(rasterMap)
+
+        rasterMaps = np.array(rasterMaps)
+        stackedMaps = np.squeeze(rasterMaps, axis=-1)
+        np.save("."+os.path.sep+"prediction_" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".npy", stackedMaps)
+
+        image_paths.append("."+os.path.sep+"prediction_" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".npy")
+
+        ii, jj = rasters[0].xy(row+xSize, col+ySize)
+        create_file_if_not_exist("./predict_start_end_coordinates.txt")
+        with open("./predict_start_end_coordinates.txt", 'a+') as file:
+            file.write(str(i)+","+str(j)+";"+str(ii)+","+str(jj)+":composite_"+"prediction_" + str(xSize) + "-" + str(ySize) + "-" + str(i).replace(".", "dot") + "_" + str(j).replace(".", "dot") + ".png"+"\n")
+
+    return image_paths
+
+def readCoordinatesFromFile(file_path, points):
+    file = open(file_path, "r")
+    for line in file.readlines():
+        xValue = float(line.split(",")[1].rstrip())
+        yValue = float(line.split(",")[0])
+        points.append([xValue, yValue])
+    return points
 
 def create_file_if_not_exist(file_path):
     directory = os.path.dirname(file_path)
@@ -51,28 +98,31 @@ def prepare_plot(origImage, origMask, predMask, ct, filename, patch_identifier):
     #figure.show()
 
 
-def make_predictions(model, imagePath, ct):
+def make_predictions(model, imagePath, ct, isTestMode, type, typeThreshold):
     model.eval()
     with torch.no_grad():
         numpy_array = np.load(imagePath)
         image = torch.tensor(numpy_array, dtype=torch.float32)
         filename = imagePath.split(os.path.sep)[-1].replace("npy", "png")
-        groundTruthPath = os.path.join(config.MASK_DATASET_PATH, filename)
-        gtMask = cv2.imread(groundTruthPath, 0)
-        gtMask = torch.tensor(gtMask, dtype=torch.float32)
+        if isTestMode:
+            gtMask = np.zeros((64, 64))
+        else:
+            groundTruthPath = os.path.join(config.MASK_DATASET_PATH, filename)
+            gtMask = cv2.imread(groundTruthPath, 0)
+            gtMask = torch.tensor(gtMask, dtype=torch.float32)
         image = image.unsqueeze(0)
         predMask = model(image)
         predMask = predMask.squeeze()
         output_probs = torch.sigmoid(predMask)
         output_probs_np = output_probs.cpu().numpy()
-        output_probs_np = (output_probs_np > config.THRESHOLD) * 255
+        output_probs_np = (output_probs_np > typeThreshold) * 255
         output_probs_np = output_probs_np.astype(np.uint8)
         ones_array = np.mean(numpy_array, axis=0)
-        patch_identifier = imagePath.split("\\")[-1].split(".")[0]
+        patch_identifier = imagePath.split(os.path.sep)[-1].split(".")[0]
         prepare_plot(ones_array, gtMask, output_probs_np, ct, filename, patch_identifier)
         conf_matrix = confusion_matrix(gtMask.flatten(), output_probs_np.flatten())
-        print(conf_matrix)
-        print("-----")
+        #print(conf_matrix)
+        #print("-----")
         '''
         TP = conf_matrix[0][0]
         FP = conf_matrix[0][1]
@@ -87,17 +137,28 @@ def make_predictions(model, imagePath, ct):
         if not os.path.exists(subfolder):
             os.makedirs(subfolder)
 
-        cv2.imwrite(os.path.join(subfolder, config.prefix+'_probs_' + patch_identifier + '.png'), output_probs_np)
+        cv2.imwrite(os.path.join(subfolder, type+'_probs_' + patch_identifier + '.png'), output_probs_np)
         create_file_if_not_exist(config.PROBS_FILE_PATH)
         with open(config.PROBS_FILE_PATH, 'a+') as destination:
-            destination.write(patch_identifier+"\n")
+            if type == "bugday":
+                destination.write(patch_identifier+"\n")
 
-imagePaths = open(config.TEST_PATHS).read().strip().split("\n")
-imagePaths = np.random.choice(imagePaths, size=3)
 
-unet = torch.load(config.MODEL_PATH).to(config.DEVICE)
 
-ct=0
+create_file_if_not_exist(configuration.PREDICT_COORDINATES_FILE_PATH)
+coordinates_list = readCoordinatesFromFile(configuration.PREDICT_COORDINATES_FILE_PATH, [])
+imagePaths = createImageAndPatches(xSize, ySize, coordinates_list, rasters)
+
+types_to_predict = ["bugday", "domates", "misir", "misir2", "pamuk", "uzum", "yonca", "zeytin"]
+threshold_respect_to_type = [0.28, 0.29, 0.32, 0.275, 0.32, 0.32, 0.27, 0.29]
+for type in types_to_predict:
+    model_path = "C:/Users/oguzh/PycharmProjects/graduationProject/saved_models/"+type+"_output/" + type+"_model.pth";
+    unet = torch.load(model_path).to(config.DEVICE)
+    ct=0
+    for path in imagePaths:
+        make_predictions(unet, path, ct, True, type, threshold_respect_to_type[types_to_predict.index(type)])
+        ct+=1
+
+
 for path in imagePaths:
-    make_predictions(unet, path, ct)
-    ct+=1
+    utils.delete_file_if_exists(path)

@@ -1,5 +1,3 @@
-import colorsys
-
 BUGDAY_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\bugday.shp"
 DOMATES_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\domates.shp"
 MISIR_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\misir.shp"
@@ -9,17 +7,8 @@ UZUM_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merg
 YONCA_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\yonca.shp"
 ZEYTIN_SHP_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\merged\\zeytin.shp"
 
-BUGDAY_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\bugday_probs_0.png"
-DOMATES_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\domates_probs_0.png"
-MISIR_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\misir_probs_0.png"
-MISIR2_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\misir2_probs_0.png"
-PAMUK_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\pamuk_probs_0.png"
-UZUM_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\uzum_probs_0.png"
-YONCA_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\yonca_probs_0.png"
-ZEYTIN_OUTPUT_MAP_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\probs\\zeytin_probs_0.png"
-
-
 COORDINATES_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\coordinates.txt"
+PREDICT_COORDINATES_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\predict_coordinates.txt"
 
 _04_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files_yeni\\04_VH.tif"
 _04_VV_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files_yeni\\04_VV.tif"
@@ -60,26 +49,4 @@ CROP_COLOR_CODES = {
     "yonca" : (255,0,191),
     "zeytin" : (255,0,43),
     "diger" : (0,0,0)
-}
-
-class_map = {
-    (255, 0, 0): 0,
-    (0, 255, 0): 1,
-    (0, 0, 255): 2,
-    (128,0,128): 3,
-    (128,128,0): 4,
-    (0,255,255): 5,
-    (255,127,80): 6,
-    (0,0,0): 7
-}
-
-class_map_reverse = {
-    0 : (255, 0, 0),
-    1 : (0, 255, 0),
-    2 : (0, 0, 255),
-    3 : (128,0,128),
-    4 : (128,128,0),
-    5 : (0,255,255),
-    6 : (255,127,80),
-    7 : (0,0,0)
 }
