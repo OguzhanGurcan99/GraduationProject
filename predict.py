@@ -95,6 +95,7 @@ def prepare_plot(origImage, origMask, predMask, ct, filename, patch_identifier):
     if not os.path.exists(subfolder):
         os.makedirs(subfolder)
     figure.savefig(os.path.join(subfolder,"plot_"+patch_identifier+'.png'))
+    plt.close(figure)
     #figure.show()
 
 
@@ -143,22 +144,23 @@ def make_predictions(model, imagePath, ct, isTestMode, type, typeThreshold):
             if type == "bugday":
                 destination.write(patch_identifier+"\n")
 
+def run_predict(path):
+    create_file_if_not_exist(path) # configuration.PREDICT_COORDINATES_FILE_PATH
+    coordinates_list = readCoordinatesFromFile(configuration.PREDICT_COORDINATES_FILE_PATH, [])
+    imagePaths = createImageAndPatches(xSize, ySize, coordinates_list, rasters)
+
+    types_to_predict = ["bugday", "domates", "misir", "misir2", "pamuk", "uzum", "yonca", "zeytin"]
+    threshold_respect_to_type = [0.28, 0.29, 0.32, 0.275, 0.32, 0.32, 0.27, 0.29]
+    for type in types_to_predict:
+        model_path = "C:/Users/oguzh/PycharmProjects/graduationProject/saved_models/"+type+"_output/" + type+"_model.pth";
+        unet = torch.load(model_path).to(config.DEVICE)
+        ct=0
+        for path in imagePaths:
+            make_predictions(unet, path, ct, True, type, threshold_respect_to_type[types_to_predict.index(type)])
+            ct+=1
 
 
-create_file_if_not_exist(configuration.PREDICT_COORDINATES_FILE_PATH)
-coordinates_list = readCoordinatesFromFile(configuration.PREDICT_COORDINATES_FILE_PATH, [])
-imagePaths = createImageAndPatches(xSize, ySize, coordinates_list, rasters)
-
-types_to_predict = ["bugday", "domates", "misir", "misir2", "pamuk", "uzum", "yonca", "zeytin"]
-threshold_respect_to_type = [0.28, 0.29, 0.32, 0.275, 0.32, 0.32, 0.27, 0.29]
-for type in types_to_predict:
-    model_path = "C:/Users/oguzh/PycharmProjects/graduationProject/saved_models/"+type+"_output/" + type+"_model.pth";
-    unet = torch.load(model_path).to(config.DEVICE)
-    ct=0
     for path in imagePaths:
-        make_predictions(unet, path, ct, True, type, threshold_respect_to_type[types_to_predict.index(type)])
-        ct+=1
+        utils.delete_file_if_exists(path)
 
 
-for path in imagePaths:
-    utils.delete_file_if_exists(path)

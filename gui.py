@@ -1,3 +1,4 @@
+import subprocess
 import sys
 from PyQt6.QtWidgets import (
     QApplication,
@@ -8,28 +9,43 @@ from PyQt6.QtWidgets import (
     QLabel,
     QListWidget
 )
+from PyQt6.QtGui import QIcon
 from pathlib import Path
+
+import generate_composite_output
+import predict
+import mapInterface
+
+import webbrowser
 
 
 class MainWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle('PyQt File Dialog')
-        self.setGeometry(100, 100, 300, 150)
+        icon = QIcon('./ui/logo.png')
+        self.setWindowIcon(icon)
+
+        self.setWindowTitle('Crop Type Detector v_1.0')
+        self.setGeometry(400, 200, 500, 300)
 
         layout = QGridLayout()
         self.setLayout(layout)
 
         # file selection
-        file_browser_btn = QPushButton('Browse')
+        file_browser_btn = QPushButton('Import File')
         file_browser_btn.clicked.connect(self.open_file_dialog)
+
+        predict_btn = QPushButton('Run Prediction')
+        predict_btn.clicked.connect(self.run_program)
+
 
         self.file_list = QListWidget(self)
 
-        layout.addWidget(QLabel('Files:'), 0, 0)
+        layout.addWidget(QLabel('Input File:'), 0, 0)
         layout.addWidget(self.file_list, 1, 0)
         layout.addWidget(file_browser_btn, 2, 0)
+        layout.addWidget(predict_btn, 3, 0)
 
         self.show()
 
@@ -37,13 +53,23 @@ class MainWindow(QWidget):
         dialog = QFileDialog(self)
         dialog.setDirectory(r'C:\images')
         dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
-        dialog.setNameFilter("Images (*.png *.jpg *.txt)")
+        dialog.setNameFilter("Prediction Files (*.txt)")
         dialog.setViewMode(QFileDialog.ViewMode.List)
         if dialog.exec():
             filenames = dialog.selectedFiles()
             if filenames:
                 self.file_list.addItems([str(Path(filename)) for filename in filenames])
+                self.path = filenames[0]
 
+    def run_program(self):
+        predict.run_predict(self.path)
+        generate_composite_output.run_gco()
+        mapInterface.run_map_interface()
+
+        chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe"
+        html_file_path = 'C:/Users/oguzh/PycharmProjects/graduationProject/output.html'
+        command = [chrome_path, html_file_path]
+        subprocess.Popen(command)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
