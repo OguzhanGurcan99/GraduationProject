@@ -50,3 +50,14 @@ CROP_COLOR_CODES = {
     "zeytin" : (255,0,43),
     "diger" : (0,0,0)
 }
+
+SHP_FILE_PATHS = {
+    "bugday" : BUGDAY_SHP_FILE_PATH,
+    "domates" : DOMATES_SHP_FILE_PATH,
+    "misir" : MISIR_SHP_FILE_PATH,
+    "misir2" : MISIR2_SHP_FILE_PATH,
+    "pamuk" : PAMUK_SHP_FILE_PATH,
+    "uzum" : UZUM_SHP_FILE_PATH,
+    "yonca" : YONCA_SHP_FILE_PATH,
+    "zeytin" : ZEYTIN_SHP_FILE_PATH
+}
