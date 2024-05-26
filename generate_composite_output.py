@@ -16,7 +16,7 @@ def run_gco():
 
     width = config.xSize
     height = config.ySize
-
+    composite_image_ls = []
     for line in lines:
         bugday_probs = cv2.imread("./probs/bugday_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
         domates_probs = cv2.imread("./probs/domates_probs_" + line.rstrip() + ".png", cv2.IMREAD_GRAYSCALE)
@@ -64,7 +64,9 @@ def run_gco():
         image = image.rotate(90)
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
         image.save("composite_"+line.rstrip()+".png")
+        composite_image_ls.append([image, [float(line.rstrip().split("-")[-1].split("_")[0].replace("dot", ".")), float(line.rstrip().split("-")[-1].split("_")[1].replace("dot", "."))]])
 
     probs_file.close()
     utils.delete_folder_if_exists("./probs")
     utils.delete_folder_if_exists("./plots")
+    return composite_image_ls

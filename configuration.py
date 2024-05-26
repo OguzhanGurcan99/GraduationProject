@@ -38,6 +38,9 @@ _10_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\t
 _10_VV_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files_yeni\\10_VV.tif"
 _10_VV_VH_TIFF_FILE_PATH = "C:\\Users\\oguzh\\PycharmProjects\\graduationProject\\tiff_files_yeni\\10_VV-VH.tif"
 
+h = 0.3
+m = 0.25
+l = 0.10
 
 CROP_COLOR_CODES = {
     "bugday" : (255,149,0),
@@ -48,7 +51,7 @@ CROP_COLOR_CODES = {
     "uzum" : (21,0,255),
     "yonca" : (255,0,191),
     "zeytin" : (255,0,43),
-    "diger" : (0,0,0)
+    "diger" : (170,170,170)
 }
 
 SHP_FILE_PATHS = {
@@ -60,4 +63,16 @@ SHP_FILE_PATHS = {
     "uzum" : UZUM_SHP_FILE_PATH,
     "yonca" : YONCA_SHP_FILE_PATH,
     "zeytin" : ZEYTIN_SHP_FILE_PATH
+}
+
+THRESHOLD_DICT = {
+    0 : [h, h, h, h, h, h, h, h],
+    1 : [l, h, h, h, h, h, h, h],
+    2 : [h, l, h, h, h, h, h, h],
+    3 : [h, h, l, h, h, h, h, h],
+    4 : [h, h, h, l, h, h, h, h],
+    5 : [h, h, h, h, l, h, h, h],
+    6 : [h, h, h, h, h, l, h, h],
+    7 : [h, h, h, h, h, h, l, h],
+    8 : [h, h, h, h, h, h, h, l]
 }

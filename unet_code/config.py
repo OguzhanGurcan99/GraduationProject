@@ -2,7 +2,7 @@ import os
 import rasterio
 import configuration
 
-prefix = "zeytin" # TODO patch, mask uretimi ve train asamalarinda guncellenmeli.
+prefix = "bugday" # TODO patch, mask uretimi ve train asamalarinda guncellenmeli.
 
 shp_file_path = configuration.SHP_FILE_PATHS[prefix]
 
@@ -35,8 +35,8 @@ TEST_SPLIT = 0.15
 DEVICE = "cpu"
 PIN_MEMORY = True if DEVICE == "cuda" else False
 
-INIT_LR = 0.0002
-NUM_EPOCHS = 20
+INIT_LR = 0.0001
+NUM_EPOCHS = 100
 BATCH_SIZE = 8
 INPUT_IMAGE_WIDTH = 64
 INPUT_IMAGE_HEIGHT = 64

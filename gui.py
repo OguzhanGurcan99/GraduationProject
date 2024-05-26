@@ -13,6 +13,7 @@ from PyQt6.QtGui import QIcon
 from pathlib import Path
 
 import generate_composite_output
+import gui_manuel
 import predict
 import mapInterface
 
@@ -36,7 +37,7 @@ class MainWindow(QWidget):
         file_browser_btn = QPushButton('Import File')
         file_browser_btn.clicked.connect(self.open_file_dialog)
 
-        predict_btn = QPushButton('Run Prediction')
+        predict_btn = QPushButton('Run Classification')
         predict_btn.clicked.connect(self.run_program)
 
 
@@ -63,7 +64,8 @@ class MainWindow(QWidget):
 
     def run_program(self):
         predict.run_predict(self.path)
-        generate_composite_output.run_gco()
+        composite_image_ls = generate_composite_output.run_gco()
+        gui_manuel.update_final_map(composite_image_ls)
         mapInterface.run_map_interface()
 
         chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe"

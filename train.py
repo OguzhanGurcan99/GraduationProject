@@ -44,9 +44,9 @@ testLoader = DataLoader(testDS, shuffle=False, batch_size=config.BATCH_SIZE, pin
 def train_model():
 
 	unet = UNet().to(config.DEVICE)
-	lossFunc = BCEWithLogitsLoss(pos_weight=torch.tensor([0.2])) #pos_weight=torch.tensor([3])
-	#opt = Adam(unet.parameters(), lr=config.INIT_LR) # SGD denenebilir
-	opt = SGD(unet.parameters(), lr=config.INIT_LR)
+	lossFunc = BCEWithLogitsLoss() #pos_weight=torch.tensor([3])
+	opt = Adam(unet.parameters(), lr=config.INIT_LR) # SGD denenebilir
+	#opt = SGD(unet.parameters(), lr=config.INIT_LR)
 	trainSteps = len(trainDS) // config.BATCH_SIZE
 	testSteps = len(testDS) // config.BATCH_SIZE
 	H = {"train_loss": [], "test_loss": []}

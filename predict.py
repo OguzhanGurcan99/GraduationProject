@@ -1,4 +1,6 @@
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, precision_recall_curve
+
+import configuration
 import utils
 from unet_code import config
 import matplotlib.pyplot as plt
@@ -116,6 +118,7 @@ def make_predictions(model, imagePath, ct, isTestMode, type, typeThreshold):
         predMask = predMask.squeeze()
         output_probs = torch.sigmoid(predMask)
         output_probs_np = output_probs.cpu().numpy()
+
         output_probs_np = (output_probs_np > typeThreshold) * 255
         output_probs_np = output_probs_np.astype(np.uint8)
         ones_array = np.mean(numpy_array, axis=0)
@@ -144,23 +147,43 @@ def make_predictions(model, imagePath, ct, isTestMode, type, typeThreshold):
             if type == "bugday":
                 destination.write(patch_identifier+"\n")
 
+
+def get_x_y_sign(path):
+    clear_line = path.rstrip().split("-")[-1].split(".")[0].replace("dot", ".")
+    lon = float(clear_line.split("_")[0])
+    lat = float(clear_line.split("_")[1])
+
+    raster = rasterio.open(configuration._04_VH_TIFF_FILE_PATH)
+    row, col = raster.index(lon, lat)
+
+    return (row // 64), (col // 64)
+
+
+def get_threshold_(path):
+    y_sign, x_sign = get_x_y_sign(path)
+    thresholds = np.load("threshold.npy")
+    return thresholds[y_sign][x_sign]
+
+
+
 def run_predict(path):
-    create_file_if_not_exist(path) # configuration.PREDICT_COORDINATES_FILE_PATH
-    coordinates_list = readCoordinatesFromFile(configuration.PREDICT_COORDINATES_FILE_PATH, [])
+    #create_file_if_not_exist(path) # configuration.PREDICT_COORDINATES_FILE_PATH
+    coordinates_list = readCoordinatesFromFile(path, [])
     imagePaths = createImageAndPatches(xSize, ySize, coordinates_list, rasters)
 
     types_to_predict = ["bugday", "domates", "misir", "misir2", "pamuk", "uzum", "yonca", "zeytin"]
-    threshold_respect_to_type = [0.28, 0.29, 0.32, 0.275, 0.32, 0.32, 0.27, 0.29]
+    #threshold_respect_to_type = [0.28, 0.29, 0.32, 0.275, 0.32, 0.32, 0.27, 0.29]
+    coefficient = 1
     for type in types_to_predict:
         model_path = "C:/Users/oguzh/PycharmProjects/graduationProject/saved_models/"+type+"_output/" + type+"_model.pth";
         unet = torch.load(model_path).to(config.DEVICE)
         ct=0
         for path in imagePaths:
-            make_predictions(unet, path, ct, True, type, threshold_respect_to_type[types_to_predict.index(type)])
-            ct+=1
 
+            threshold = get_threshold_(path)
+            make_predictions(unet, path, ct, True, type, coefficient*configuration.THRESHOLD_DICT[threshold][types_to_predict.index(type)])
+            ct+=1
 
     for path in imagePaths:
         utils.delete_file_if_exists(path)
-
 

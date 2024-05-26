@@ -70,7 +70,7 @@ def run_map_interface():
         <i class="fa fa-map-marker fa-2x" style="color:rgb(21,0,255)"></i>&nbsp;Üzüm<br>
         <i class="fa fa-map-marker fa-2x" style="color:rgb(255,0,191)"></i>&nbsp;Yonca<br>
         <i class="fa fa-map-marker fa-2x" style="color:rgb(255,0,43)"></i>&nbsp;Zeytin<br>
-        <i class="fa fa-map-marker fa-2x" style="color:rgb(0,0,0)"></i>&nbsp;Tarım Dışı Alan<br>
+        <i class="fa fa-map-marker fa-2x" style="color:rgb(170,170,170)"></i>&nbsp;Tarım Dışı Alan<br>
     </div>
     '''
 
