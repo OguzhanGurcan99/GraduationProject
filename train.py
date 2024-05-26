@@ -9,6 +9,7 @@ from torch.nn import BCEWithLogitsLoss
 from torch.optim import Adam, SGD
 from torch.utils.data import DataLoader
 from torchvision import transforms
+from torchvision.transforms import RandomHorizontalFlip, RandomVerticalFlip, RandomRotation
 from tqdm import tqdm
 
 import utils
@@ -31,8 +32,12 @@ f.write("\n".join(testImages))
 f.close()
 
 transforms = transforms.Compose([
-	ToFloat32Tensor()
+	ToFloat32Tensor(),
+	RandomHorizontalFlip(p=0.5),
+    RandomVerticalFlip(p=0.5),
+    RandomRotation(degrees=25) # data augmentation
 ])
+
 trainDS = SegmentationDataset(imagePaths=trainImages, maskPaths=trainMasks, transforms=transforms)
 testDS = SegmentationDataset(imagePaths=testImages, maskPaths=testMasks, transforms=transforms)
 #print(f"[INFO] found {len(trainDS)} examples in the training set...")
