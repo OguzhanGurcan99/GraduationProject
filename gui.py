@@ -66,6 +66,7 @@ class MainWindow(QWidget):
         predict.run_predict(self.path)
         composite_image_ls = generate_composite_output.run_gco()
         gui_manuel.update_final_map(composite_image_ls)
+        import try4
         mapInterface.run_map_interface()
 
         chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe"
